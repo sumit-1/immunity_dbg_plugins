@@ -33,6 +33,13 @@ def compare(buf, mem_buf):
 			return buf[i]
 	return True
 
+def byteArray():
+	buf = ''
+	for i in range(0, 255):
+		c = struct.pack('h', i)[0]
+		buf += c
+	return buf
+
 def convertToHex(badchar):
 	a = ''
 	for i in xrange(0, len(badchar), 4):
@@ -40,17 +47,16 @@ def convertToHex(badchar):
 	return binascii.unhexlify(a)
 
 def main(args):
-	if len(args) < 2:
+	if len(args) < 1:
 		usage()
 		return 'Try Harder!'
-	buf = ''
 	reg = args[0]
-	badchar = convertToHex(args[1])
-	imm.log('Badchars entered: %d' % (len(badchar)))
-	for i in range(0, 255):
-		c = struct.pack('h', i)[0]
-		buf += c
-	buf = filterBC(buf, badchar)
+	if len(args) < 2:
+		badchar = convertToHex(args[1])
+		imm.log('Badchars entered: %d' % (len(badchar)))
+	else:
+		badchar = ''
+	buf = filterBC(byteArray(), badchar)
 	mem_buf = imm.readMemory(imm.getRegs()[reg], len(buf))
 	res = compare(buf, mem_buf)
 	if res != True:
